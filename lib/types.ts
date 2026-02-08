@@ -39,6 +39,7 @@ export interface ProofItem {
   numericValue?: number;
   en: { label: string; value: string };
   zh: { label: string; value: string };
+  subtitle?: LocalizedText;
 }
 
 export interface AboutContent {
