@@ -1,6 +1,8 @@
 import type { MetadataRoute } from "next";
 import contentData from "@/content/content.json";
 
+export const dynamic = "force-static";
+
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = "https://TODO_YOUR_DOMAIN.com";
   const projects = (contentData as { projects: { slug: string }[] }).projects;
