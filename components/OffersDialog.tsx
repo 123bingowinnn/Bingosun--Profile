@@ -182,11 +182,11 @@ export function OffersDialog({ open, onOpenChange }: { open: boolean; onOpenChan
                         <div
                             key={index}
                             onClick={() => setSelectedOffer(index)}
-                            className="relative overflow-hidden rounded-xl border border-border/50 bg-gradient-to-br from-card/50 to-card/30 p-5 hover:shadow-lg transition-all duration-300 hover:border-primary/30 cursor-pointer group"
+                            className="relative overflow-hidden rounded-xl border border-border/50 bg-gradient-to-br from-card/50 to-card/30 p-4 sm:p-5 hover:shadow-lg transition-all duration-300 hover:border-primary/30 cursor-pointer group"
                         >
-                            <div className="flex items-center gap-5">
+                            <div className="flex items-start sm:items-center gap-3 sm:gap-5">
                                 {/* University Logo - using actual school logos */}
-                                <div className="flex-shrink-0 w-16 h-16 rounded-xl bg-white p-2 flex items-center justify-center shadow-sm group-hover:shadow-md transition-shadow border border-border/30">
+                                <div className="flex-shrink-0 w-14 h-14 sm:w-16 sm:h-16 rounded-xl bg-white p-2 flex items-center justify-center shadow-sm group-hover:shadow-md transition-shadow border border-border/30">
                                     <img
                                         src={offer.logo}
                                         alt={offer.school}
@@ -201,21 +201,21 @@ export function OffersDialog({ open, onOpenChange }: { open: boolean; onOpenChan
 
                                 {/* Offer Details */}
                                 <div className="flex-1 min-w-0">
-                                    <div className="flex items-start justify-between gap-3">
-                                        <div>
-                                            <h3 className="text-lg font-bold truncate">{offer.school}</h3>
+                                    <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-1.5 sm:gap-3">
+                                        <div className="min-w-0">
+                                            <h3 className="text-base sm:text-lg font-bold leading-tight">{offer.school}</h3>
                                             {offer.highlight && (
-                                                <p className="text-sm text-muted-foreground">{offer.highlight}</p>
+                                                <p className="text-sm text-muted-foreground leading-snug">{offer.highlight}</p>
                                             )}
                                         </div>
                                         {index === 0 && (
-                                            <Badge className="bg-green-500/10 text-green-600 dark:text-green-400 border-green-500/20 flex-shrink-0">
+                                            <Badge className="self-start whitespace-nowrap bg-green-500/10 text-green-600 dark:text-green-400 border-green-500/20 flex-shrink-0">
                                                 <Award className="h-3 w-3 mr-1" />
                                                 {offer.status}
                                             </Badge>
                                         )}
                                     </div>
-                                    <div className="mt-2 text-sm text-muted-foreground">
+                                    <div className="mt-1.5 sm:mt-2 text-sm text-muted-foreground">
                                         <span className="flex items-center gap-1">
                                             <GraduationCap className="h-3.5 w-3.5" />
                                             {offer.degree}
@@ -224,7 +224,7 @@ export function OffersDialog({ open, onOpenChange }: { open: boolean; onOpenChan
                                 </div>
 
                                 {/* Click indicator */}
-                                <div className="flex-shrink-0 text-muted-foreground/50 group-hover:text-primary transition-colors">
+                                <div className="hidden sm:flex flex-shrink-0 text-muted-foreground/50 group-hover:text-primary transition-colors">
                                     <ExternalLink className="h-5 w-5" />
                                 </div>
                             </div>

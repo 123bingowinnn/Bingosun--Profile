@@ -1,6 +1,6 @@
 "use client";
 
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion, useScroll, useSpring } from "framer-motion";
@@ -15,6 +15,7 @@ import { cn } from "@/lib/utils";
 export function Navbar() {
   const { lang } = useI18n();
   const pathname = usePathname();
+  const router = useRouter();
   const content = getContent();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -60,9 +61,20 @@ export function Navbar() {
   const handleNavClick = (href: string) => {
     setMobileOpen(false);
     if (href.startsWith("#")) {
-      const el = document.getElementById(href.slice(1));
-      el?.scrollIntoView({ behavior: "smooth" });
+      if (isHome) {
+        const el = document.getElementById(href.slice(1));
+        if (el) {
+          el.scrollIntoView({ behavior: "smooth" });
+        } else {
+          window.location.hash = href.slice(1);
+        }
+      } else {
+        // Use native hash navigation on sub-pages to ensure anchor scroll works in static export deploys.
+        window.location.href = `/${href}`;
+      }
+      return;
     }
+    router.push(href);
   };
 
   return (

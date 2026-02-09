@@ -38,13 +38,28 @@ async function getResumeBlobUrl(file: string): Promise<string> {
 export function ResumePreview({ open, onOpenChange }: { open: boolean; onOpenChange: (open: boolean) => void }) {
     const { lang } = useI18n();
     const [isFrameLoading, setIsFrameLoading] = useState(false);
+    const [isMobileViewport, setIsMobileViewport] = useState(false);
 
     // Use different resume based on language
     const resumeFile = useMemo(() => (lang === "zh" ? "/resume-zh.pdf" : "/resume-en.pdf"), [lang]);
     const [resumeBlobUrl, setResumeBlobUrl] = useState<string | null>(() => resumeBlobUrlCache.get(resumeFile) ?? null);
 
     const resolvedResumeUrl = resumeBlobUrl ?? resumeFile;
-    const resumeSrc = `${resolvedResumeUrl}#toolbar=0&navpanes=0&view=FitH`;
+    const resumeSrc = isMobileViewport
+        ? resolvedResumeUrl
+        : `${resolvedResumeUrl}#toolbar=0&navpanes=0&view=FitH`;
+
+    useEffect(() => {
+        const mediaQuery = window.matchMedia("(max-width: 768px)");
+        const update = () => setIsMobileViewport(mediaQuery.matches);
+        update();
+        if (typeof mediaQuery.addEventListener === "function") {
+            mediaQuery.addEventListener("change", update);
+            return () => mediaQuery.removeEventListener("change", update);
+        }
+        mediaQuery.addListener(update);
+        return () => mediaQuery.removeListener(update);
+    }, []);
 
     useEffect(() => {
         setResumeBlobUrl(resumeBlobUrlCache.get(resumeFile) ?? null);
