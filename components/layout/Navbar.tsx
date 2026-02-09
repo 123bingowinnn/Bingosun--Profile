@@ -21,6 +21,8 @@ export function Navbar() {
   const [activeSection, setActiveSection] = useState("");
 
   const isHome = pathname === "/";
+  const pathDepth = pathname.split("/").filter(Boolean).length;
+  const homeHref = isHome ? "/" : "../".repeat(pathDepth);
   const activeNavOnSubPage =
     pathname.startsWith("/experience")
       ? "experience"
@@ -94,10 +96,12 @@ export function Navbar() {
 
   const getNavHref = (href: string) => {
     if (href.startsWith("#")) {
-      return isHome ? href : `/${href}`;
+      return isHome ? href : `${homeHref}${href}`;
     }
     return href;
   };
+
+  const shouldUsePlainAnchor = (href: string) => !isHome && href.startsWith("#");
 
   const handleNavClick = (event: React.MouseEvent<HTMLAnchorElement>, href: string) => {
     setMobileOpen(false);
@@ -136,7 +140,7 @@ export function Navbar() {
         <div className="flex items-center gap-3">
           {!isHome && (
             <Link
-              href="/"
+              href={homeHref}
               className="group flex items-center justify-center h-8 w-8 rounded-full bg-accent/50 hover:bg-accent transition-colors"
               aria-label="Back to Home"
             >
@@ -144,7 +148,7 @@ export function Navbar() {
             </Link>
           )}
           <Link
-            href="/"
+            href={homeHref}
             className="text-lg font-bold tracking-tight hover:opacity-80 transition-opacity"
           >
             {content.hero[lang].name}
@@ -153,28 +157,51 @@ export function Navbar() {
 
         {/* Desktop nav */}
         <div className="hidden md:flex items-center gap-1">
-          {content.nav.map((item) => (
-            <Link
-              key={item.id}
-              href={getNavHref(item.href)}
-              onClick={(event) => handleNavClick(event, item.href)}
-              className={cn(
-                "relative px-3 py-2 text-sm rounded-md transition-colors",
-                highlightedNavId === item.id
-                  ? "text-foreground font-medium"
-                  : "text-muted-foreground hover:text-foreground"
-              )}
-            >
-              {item[lang]}
-              {highlightedNavId === item.id && (
-                <motion.div
-                  className="absolute inset-0 bg-accent rounded-md -z-10"
-                  layoutId="nav-active"
-                  transition={{ type: "spring", stiffness: 400, damping: 30 }}
-                />
-              )}
-            </Link>
-          ))}
+          {content.nav.map((item) => {
+            const navHref = getNavHref(item.href);
+            const className = cn(
+              "relative px-3 py-2 text-sm rounded-md transition-colors",
+              highlightedNavId === item.id
+                ? "text-foreground font-medium"
+                : "text-muted-foreground hover:text-foreground"
+            );
+            const inner = (
+              <>
+                {item[lang]}
+                {highlightedNavId === item.id && (
+                  <motion.div
+                    className="absolute inset-0 bg-accent rounded-md -z-10"
+                    layoutId="nav-active"
+                    transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                  />
+                )}
+              </>
+            );
+
+            if (shouldUsePlainAnchor(item.href)) {
+              return (
+                <a
+                  key={item.id}
+                  href={navHref}
+                  onClick={(event) => handleNavClick(event, item.href)}
+                  className={className}
+                >
+                  {inner}
+                </a>
+              );
+            }
+
+            return (
+              <Link
+                key={item.id}
+                href={navHref}
+                onClick={(event) => handleNavClick(event, item.href)}
+                className={className}
+              >
+                {inner}
+              </Link>
+            );
+          })}
           <div className="ml-2 flex items-center gap-1 border-l border-border pl-2">
             <LanguageToggle />
             <ThemeToggle />
@@ -206,27 +233,42 @@ export function Navbar() {
           className="md:hidden bg-background/95 backdrop-blur-xl border-b border-border"
         >
           <div className="flex flex-col px-4 py-3 gap-1">
-            {content.nav.map((item, i) => (
-              <motion.div
-                key={item.id}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: i * 0.05 }}
-              >
-                <Link
-                  href={getNavHref(item.href)}
-                  onClick={(event) => handleNavClick(event, item.href)}
-                  className={cn(
-                    "block px-3 py-2.5 text-sm rounded-md text-left transition-colors",
-                    highlightedNavId === item.id
-                      ? "text-foreground font-medium bg-accent"
-                      : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
-                  )}
+            {content.nav.map((item, i) => {
+              const navHref = getNavHref(item.href);
+              const className = cn(
+                "block px-3 py-2.5 text-sm rounded-md text-left transition-colors",
+                highlightedNavId === item.id
+                  ? "text-foreground font-medium bg-accent"
+                  : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
+              );
+
+              return (
+                <motion.div
+                  key={item.id}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: i * 0.05 }}
                 >
-                  {item[lang]}
-                </Link>
-              </motion.div>
-            ))}
+                  {shouldUsePlainAnchor(item.href) ? (
+                    <a
+                      href={navHref}
+                      onClick={(event) => handleNavClick(event, item.href)}
+                      className={className}
+                    >
+                      {item[lang]}
+                    </a>
+                  ) : (
+                    <Link
+                      href={navHref}
+                      onClick={(event) => handleNavClick(event, item.href)}
+                      className={className}
+                    >
+                      {item[lang]}
+                    </Link>
+                  )}
+                </motion.div>
+              );
+            })}
           </div>
         </motion.div>
       )}
