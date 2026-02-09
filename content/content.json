@@ -199,7 +199,7 @@
       "en": {
         "company": "Alibaba Cloud (Lingyang Intelligence)",
         "role": "Product Operations Intern, Dataphin",
-        "period": "Jul 2025 – Sep 2025",
+        "period": "Jul 2025 – Oct 2025",
         "location": "Hangzhou, China",
         "summary": "Built a global go-to-market engine: 50+ interactive demos, a data-driven content strategy, and cross-border partnerships that fueled international expansion.",
         "bullets": [
@@ -220,7 +220,7 @@
       "zh": {
         "company": "阿里云智能集团（瓴羊）",
         "role": "Dataphin 产品运营实习生",
-        "period": "2025.07 – 2025.09",
+        "period": "2025.07 – 2025.10",
         "location": "杭州",
         "summary": "构建全球化增长引擎：产出 50+ 交互式演示、用数据驱动内容策略、搭建跨境合作体系，助力产品国际化进程。",
         "bullets": [
@@ -249,7 +249,7 @@
       "en": {
         "company": "Deloitte China (Hangzhou)",
         "role": "Data Platform Developer Intern (SAP Project)",
-        "period": "May 2025 – Jul 2025",
+        "period": "Apr 2025 – Jul 2025",
         "location": "Hangzhou, China",
         "summary": "Wore the full product hat in engineering: authored requirements, designed prototypes, developed APIs, and shipped features end-to-end on an SAP enterprise project.",
         "bullets": [
@@ -272,7 +272,7 @@
       "zh": {
         "company": "德勤咨询（杭州）",
         "role": "SAP 项目实习生 · Java 后端开发",
-        "period": "2025.05 – 2025.07",
+        "period": "2025.04 – 2025.07",
         "location": "杭州",
         "summary": "在工程团队中找到产品视角：编写需求文档、设计原型、开发接口，端到端交付 SAP 企业级项目功能。",
         "bullets": [
@@ -304,7 +304,7 @@
       "en": {
         "company": "Penghui Technology (Shanghai)",
         "role": "Big Data Intern",
-        "period": "Jun 2024 – Aug 2024",
+        "period": "Jun 2024 – Sep 2024",
         "location": "Shanghai, China",
         "summary": "Where my product intuition began: built AI interfaces and modernized legacy systems — learning firsthand how tech decisions shape user experience.",
         "bullets": [
@@ -326,7 +326,7 @@
       "zh": {
         "company": "朋辉科技（上海）",
         "role": "大数据实习生",
-        "period": "2024.06 – 2024.08",
+        "period": "2024.06 – 2024.09",
         "location": "上海",
         "summary": "产品直觉的起点：构建 AI 接口、升级遗留系统——实战中理解技术决策如何塑造用户体验。",
         "bullets": [
@@ -355,7 +355,7 @@
       "en": {
         "company": "Wenzhou-Kean University",
         "role": "Teaching Assistant, Computer Science Dept.",
-        "period": "Sep 2023 – Dec 2024",
+        "period": "Sep 2023 – Jan 2024",
         "location": "Wenzhou, China",
         "summary": "Supported CS instruction through workshops, grading, and data-driven student performance tracking.",
         "bullets": [
@@ -371,7 +371,7 @@
       "zh": {
         "company": "温州肯恩大学",
         "role": "助教 · 计算机系",
-        "period": "2023.09 – 2024.12",
+        "period": "2023.09 – 2024.01",
         "location": "温州",
         "summary": "通过工作坊、评分与数据驱动的学生表现追踪支持计算机科学教学。",
         "bullets": [
@@ -751,13 +751,13 @@
       "en": {
         "role": "Teaching Assistant",
         "organization": "Department of Computer Science, WKU",
-        "period": "Sep 2023 – Dec 2024",
+        "period": "Sep 2023 – Jan 2024",
         "description": "Organized academic workshops, assisted in grading coding assignments, and evaluated final projects. Built a grade management database for data-driven teaching support."
       },
       "zh": {
         "role": "助教",
         "organization": "温州肯恩大学计算机系",
-        "period": "2023.09 – 2024.12",
+        "period": "2023.09 – 2024.01",
         "description": "组织学术答疑工作坊，协助批改编程作业与评估期末项目。搭建成绩管理数据库，为数据驱动的教学支持提供工具。"
       }
     },

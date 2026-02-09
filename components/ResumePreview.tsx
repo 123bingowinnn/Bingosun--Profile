@@ -15,7 +15,7 @@ async function getResumeBlobUrl(file: string): Promise<string> {
     const inFlight = resumeBlobPromiseCache.get(file);
     if (inFlight) return inFlight;
 
-    const promise = fetch(file, { cache: "force-cache" })
+    const promise = fetch(file, { cache: "default" })
         .then((response) => {
             if (!response.ok) {
                 throw new Error(`Failed to fetch ${file}: ${response.status}`);
