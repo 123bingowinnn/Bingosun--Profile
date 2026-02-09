@@ -45,7 +45,7 @@ export default function ExperiencePage() {
               const e = exp[lang];
               return (
                 <SectionWrapper key={exp.slug} delay={index * 0.05}>
-                  <div className="relative sm:pl-12">
+                  <div id={exp.slug} className="relative sm:pl-12 scroll-mt-24">
                     {/* Timeline dot */}
                     <div className="absolute left-2.5 top-1.5 h-3.5 w-3.5 rounded-full border-2 border-border bg-background hidden sm:block" />
 

@@ -65,7 +65,7 @@ export function ExperiencePreview() {
                         </Badge>
                       ))}
                     </div>
-                    <Link href="/experience" className="text-xs text-primary/70 hover:text-primary transition-colors flex items-center gap-1 group/link">
+                    <Link href={`/experience#${exp.slug}`} className="text-xs text-primary/70 hover:text-primary transition-colors flex items-center gap-1 group/link">
                       {lang === "en" ? "Details" : "详情"}
                       <ArrowRight className="h-3 w-3 transition-transform group-hover/link:translate-x-0.5" />
                     </Link>
