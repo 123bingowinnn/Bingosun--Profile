@@ -8,22 +8,22 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://xubinsun.com"),
-  title: "Xubin Sun – CS @ Northwestern | Zoom · Alibaba Cloud · Deloitte",
+  title: "Xubin Sun – Cornell Tech | Zoom · Alibaba Cloud · Deloitte",
   description:
-    "Xubin Sun (孙徐斌) – Admitted to Northwestern, Cornell & UCL. Committed to Northwestern MSCS. AI product management, backend engineering, 3 publications (SCI Q1). Interned at Zoom, Alibaba Cloud, Deloitte.",
+    "Xubin Sun (孙徐斌) – Admitted to Cornell, Northwestern & UCL. Committed to Cornell Tech M.Eng. in Operations Research. AI product management, backend engineering, 3 publications (SCI Q1). Interned at Zoom, Alibaba Cloud, Deloitte.",
   openGraph: {
-    title: "Xubin Sun – CS @ Northwestern | Zoom · Alibaba Cloud · Deloitte",
+    title: "Xubin Sun – Cornell Tech | Zoom · Alibaba Cloud · Deloitte",
     description:
-      "Admitted to Northwestern, Cornell & UCL — committed to Northwestern MSCS. Product-minded engineer, 3 publications (SCI Q1). Zoom, Alibaba Cloud, Deloitte.",
+      "Admitted to Cornell, Northwestern & UCL — committed to Cornell Tech M.Eng. in Operations Research. Product-minded engineer, 3 publications (SCI Q1). Zoom, Alibaba Cloud, Deloitte.",
     type: "website",
     url: "https://xubinsun.com",
     images: [{ url: "/og-image.png", width: 1200, height: 630 }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Xubin Sun – CS @ Northwestern | Zoom · Alibaba Cloud · Deloitte",
+    title: "Xubin Sun – Cornell Tech | Zoom · Alibaba Cloud · Deloitte",
     description:
-      "Admitted to Northwestern, Cornell & UCL. Product-minded engineer, 3 publications (SCI Q1). Zoom, Alibaba Cloud, Deloitte.",
+      "Admitted to Cornell, Northwestern & UCL. Product-minded engineer, 3 publications (SCI Q1). Zoom, Alibaba Cloud, Deloitte.",
     images: ["/og-image.png"],
   },
   icons: { icon: "/favicon.ico" },

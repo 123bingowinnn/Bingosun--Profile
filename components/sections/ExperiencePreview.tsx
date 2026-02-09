@@ -28,46 +28,48 @@ export function ExperiencePreview() {
           </Link>
         </div>
 
-        <div className="space-y-8">
+        <div className="space-y-6">
           {experiences.map((exp) => {
             const e = exp[lang];
             return (
               <div
                 key={exp.slug}
-                className="group relative pl-8 border-l-2 border-border hover:border-foreground/30 transition-colors"
+                className="group relative pl-8 border-l border-border/50 hover:border-primary/30 transition-all duration-300"
               >
-                {/* Timeline dot */}
-                <div className="absolute -left-[9px] top-1 h-4 w-4 rounded-full border-2 border-border bg-background group-hover:border-foreground/40 transition-colors" />
+                {/* Timeline dot with glow on hover */}
+                <div className="timeline-dot absolute -left-[5px] top-2 h-2.5 w-2.5 rounded-full border-2 border-border bg-background" />
 
-                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-1 mb-2">
-                  <div>
-                    <h3 className="text-lg font-semibold">{e.role}</h3>
-                    <p className="text-muted-foreground flex items-center gap-1.5 text-sm">
-                      <Building2 className="h-3.5 w-3.5" />
-                      {e.company}
-                    </p>
+                <div className="card-premium p-5 rounded-xl">
+                  <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-1 mb-3">
+                    <div>
+                      <h3 className="text-lg font-semibold tracking-tight">{e.role}</h3>
+                      <p className="text-muted-foreground flex items-center gap-1.5 text-sm">
+                        <Building2 className="h-3.5 w-3.5" />
+                        {e.company}
+                      </p>
+                    </div>
+                    <span className="text-xs text-muted-foreground/80 whitespace-nowrap font-medium">
+                      {e.period}
+                    </span>
                   </div>
-                  <span className="text-sm text-muted-foreground whitespace-nowrap">
-                    {e.period}
-                  </span>
-                </div>
 
-                <p className="text-sm text-muted-foreground mb-3">{e.summary}</p>
+                  <p className="text-sm text-muted-foreground/90 mb-4 leading-relaxed">
+                    {e.summary}
+                  </p>
 
-                <ul className="space-y-1.5 mb-3">
-                  {e.bullets.slice(0, 3).map((bullet, i) => (
-                    <li key={i} className="text-sm text-muted-foreground/90 pl-4 relative before:content-['•'] before:absolute before:left-0 before:text-muted-foreground/40">
-                      {bullet}
-                    </li>
-                  ))}
-                </ul>
-
-                <div className="flex flex-wrap gap-1.5">
-                  {exp.tags.map((tag) => (
-                    <Badge key={tag} variant="secondary" className="text-xs">
-                      {tag}
-                    </Badge>
-                  ))}
+                  <div className="flex items-center justify-between">
+                    <div className="flex flex-wrap gap-1.5">
+                      {exp.tags.map((tag) => (
+                        <Badge key={tag} variant="secondary" className="text-xs font-medium">
+                          {tag}
+                        </Badge>
+                      ))}
+                    </div>
+                    <Link href="/experience" className="text-xs text-primary/70 hover:text-primary transition-colors flex items-center gap-1 group/link">
+                      {lang === "en" ? "Details" : "详情"}
+                      <ArrowRight className="h-3 w-3 transition-transform group-hover/link:translate-x-0.5" />
+                    </Link>
+                  </div>
                 </div>
               </div>
             );
