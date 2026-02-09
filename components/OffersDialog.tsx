@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { GraduationCap, Award, ExternalLink, ChevronLeft } from "lucide-react";
@@ -11,69 +11,111 @@ interface OfferDetails {
     school: string;
     logo: string;
     offerImage: string;
+    logoWidth: number;
+    logoHeight: number;
     degree: string;
     status: string;
     highlight?: string;
 }
 
+const offersByLang: Record<"en" | "zh", OfferDetails[]> = {
+    en: [
+        {
+            school: "Northwestern University",
+            logo: "/images/offers/northwestern.webp",
+            offerImage: "/images/offers/northwestern-offer.png",
+            logoWidth: 200,
+            logoHeight: 200,
+            degree: "M.S. in Computer Science",
+            status: "Committed",
+            highlight: "McCormick School of Engineering"
+        },
+        {
+            school: "Cornell University",
+            logo: "/images/offers/cornell.webp",
+            offerImage: "/images/offers/cornell-offer.png",
+            logoWidth: 200,
+            logoHeight: 200,
+            degree: "M.Eng. in Operations Research",
+            status: "Offer Received",
+            highlight: "Cornell Tech"
+        },
+        {
+            school: "University College London",
+            logo: "/images/offers/ucl.webp",
+            offerImage: "/images/offers/ucl-offer.png",
+            logoWidth: 200,
+            logoHeight: 59,
+            degree: "M.Sc. in Scientific and Data Intensive Computing",
+            status: "Offer Received"
+        }
+    ],
+    zh: [
+        {
+            school: "西北大学（美国）",
+            logo: "/images/offers/northwestern.webp",
+            offerImage: "/images/offers/northwestern-offer.png",
+            logoWidth: 200,
+            logoHeight: 200,
+            degree: "计算机科学硕士",
+            status: "已确认入读",
+            highlight: "麦考密克工程学院"
+        },
+        {
+            school: "康奈尔大学",
+            logo: "/images/offers/cornell.webp",
+            offerImage: "/images/offers/cornell-offer.png",
+            logoWidth: 200,
+            logoHeight: 200,
+            degree: "运筹学工程硕士",
+            status: "已收到Offer",
+            highlight: "Cornell Tech"
+        },
+        {
+            school: "伦敦大学学院",
+            logo: "/images/offers/ucl.webp",
+            offerImage: "/images/offers/ucl-offer.png",
+            logoWidth: 200,
+            logoHeight: 59,
+            degree: "科学与数据密集型计算理学硕士",
+            status: "已收到Offer"
+        }
+    ]
+};
+
+const logoUrls = Array.from(new Set(Object.values(offersByLang).flatMap((items) => items.map((item) => item.logo))));
+const offerImageUrls = Array.from(new Set(Object.values(offersByLang).flatMap((items) => items.map((item) => item.offerImage))));
+
+function preloadImages(urls: string[]) {
+    urls.forEach((url) => {
+        const img = new Image();
+        img.decoding = "async";
+        img.src = url;
+    });
+}
+
 export function OffersDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (open: boolean) => void }) {
     const { lang } = useI18n();
     const [selectedOffer, setSelectedOffer] = useState<number | null>(null);
+    const logosPreloadedRef = useRef(false);
+    const offerImagesPreloadedRef = useRef(false);
 
-    const offers: Record<'en' | 'zh', OfferDetails[]> = {
-        en: [
-            {
-                school: "Northwestern University",
-                logo: "/images/offers/northwestern.png",
-                offerImage: "/images/offers/northwestern-offer.png",
-                degree: "M.S. in Computer Science",
-                status: "Committed",
-                highlight: "McCormick School of Engineering"
-            },
-            {
-                school: "Cornell University",
-                logo: "/images/offers/cornell.png",
-                offerImage: "/images/offers/cornell-offer.png",
-                degree: "M.Eng. in Operations Research",
-                status: "Offer Received",
-                highlight: "Cornell Tech"
-            },
-            {
-                school: "University College London",
-                logo: "/images/offers/ucl.png",
-                offerImage: "/images/offers/ucl-offer.png",
-                degree: "M.Sc. in Scientific and Data Intensive Computing",
-                status: "Offer Received"
-            }
-        ],
-        zh: [
-            {
-                school: "西北大学（美国）",
-                logo: "/images/offers/northwestern.png",
-                offerImage: "/images/offers/northwestern-offer.png",
-                degree: "计算机科学硕士",
-                status: "已确认入读",
-                highlight: "麦考密克工程学院"
-            },
-            {
-                school: "康奈尔大学",
-                logo: "/images/offers/cornell.png",
-                offerImage: "/images/offers/cornell-offer.png",
-                degree: "运筹学工程硕士",
-                status: "已收到Offer",
-                highlight: "Cornell Tech"
-            },
-            {
-                school: "伦敦大学学院",
-                logo: "/images/offers/ucl.png",
-                offerImage: "/images/offers/ucl-offer.png",
-                degree: "科学与数据密集型计算理学硕士",
-                status: "已收到Offer"
-            }
-        ]
-    };
+    useEffect(() => {
+        if (logosPreloadedRef.current) return;
+        const timeoutId = setTimeout(() => {
+            preloadImages(logoUrls);
+            logosPreloadedRef.current = true;
+        }, 250);
+        return () => clearTimeout(timeoutId);
+    }, []);
 
-    const currentOffers = offers[lang];
+    useEffect(() => {
+        if (!open || offerImagesPreloadedRef.current) return;
+        preloadImages(offerImageUrls);
+        offerImagesPreloadedRef.current = true;
+    }, [open]);
+
+    const currentOffers = offersByLang[lang];
 
     // If an offer is selected, show the offer detail view
     if (selectedOffer !== null) {
@@ -94,7 +136,16 @@ export function OffersDialog({ open, onOpenChange }: { open: boolean; onOpenChan
                             <ChevronLeft className="h-5 w-5" />
                         </Button>
                         <div className="flex items-center gap-3">
-                            <img src={offer.logo} alt={offer.school} className="h-8 w-8 object-contain" />
+                            <img
+                                src={offer.logo}
+                                alt={offer.school}
+                                width={offer.logoWidth}
+                                height={offer.logoHeight}
+                                loading="eager"
+                                decoding="async"
+                                fetchPriority="high"
+                                className="h-8 w-8 object-contain"
+                            />
                             <div>
                                 <h2 className="text-lg font-bold">{offer.school}</h2>
                                 <p className="text-sm text-muted-foreground">{offer.degree}</p>
@@ -139,6 +190,11 @@ export function OffersDialog({ open, onOpenChange }: { open: boolean; onOpenChan
                                     <img
                                         src={offer.logo}
                                         alt={offer.school}
+                                        width={offer.logoWidth}
+                                        height={offer.logoHeight}
+                                        loading="eager"
+                                        decoding="async"
+                                        fetchPriority={index === 0 ? "high" : "auto"}
                                         className="w-full h-full object-contain"
                                     />
                                 </div>

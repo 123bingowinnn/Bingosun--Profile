@@ -1,14 +1,87 @@
 "use client";
 
+import { useEffect, useMemo, useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { FileText } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 
+const resumeBlobUrlCache = new Map<string, string>();
+const resumeBlobPromiseCache = new Map<string, Promise<string>>();
+
+async function getResumeBlobUrl(file: string): Promise<string> {
+    const cached = resumeBlobUrlCache.get(file);
+    if (cached) return cached;
+
+    const inFlight = resumeBlobPromiseCache.get(file);
+    if (inFlight) return inFlight;
+
+    const promise = fetch(file, { cache: "force-cache" })
+        .then((response) => {
+            if (!response.ok) {
+                throw new Error(`Failed to fetch ${file}: ${response.status}`);
+            }
+            return response.blob();
+        })
+        .then((blob) => {
+            const blobUrl = URL.createObjectURL(blob);
+            resumeBlobUrlCache.set(file, blobUrl);
+            return blobUrl;
+        })
+        .finally(() => {
+            resumeBlobPromiseCache.delete(file);
+        });
+
+    resumeBlobPromiseCache.set(file, promise);
+    return promise;
+}
+
 export function ResumePreview({ open, onOpenChange }: { open: boolean; onOpenChange: (open: boolean) => void }) {
     const { lang } = useI18n();
+    const [isFrameLoading, setIsFrameLoading] = useState(false);
 
     // Use different resume based on language
-    const resumeFile = lang === "zh" ? "/resume-zh.pdf" : "/resume-en.pdf";
+    const resumeFile = useMemo(() => (lang === "zh" ? "/resume-zh.pdf" : "/resume-en.pdf"), [lang]);
+    const [resumeBlobUrl, setResumeBlobUrl] = useState<string | null>(() => resumeBlobUrlCache.get(resumeFile) ?? null);
+
+    const resolvedResumeUrl = resumeBlobUrl ?? resumeFile;
+    const resumeSrc = `${resolvedResumeUrl}#toolbar=0&navpanes=0&view=FitH`;
+
+    useEffect(() => {
+        setResumeBlobUrl(resumeBlobUrlCache.get(resumeFile) ?? null);
+    }, [resumeFile]);
+
+    useEffect(() => {
+        let active = true;
+        const timeoutId = setTimeout(() => {
+            void getResumeBlobUrl(resumeFile)
+                .then((blobUrl) => {
+                    if (active) setResumeBlobUrl(blobUrl);
+                })
+                .catch(() => {
+                    if (active) setResumeBlobUrl(null);
+                });
+        }, 200);
+        return () => {
+            active = false;
+            clearTimeout(timeoutId);
+        };
+    }, [resumeFile]);
+
+    useEffect(() => {
+        if (!open) return;
+        let active = true;
+        setIsFrameLoading(true);
+        void getResumeBlobUrl(resumeFile)
+            .then((blobUrl) => {
+                if (active) setResumeBlobUrl(blobUrl);
+            })
+            .catch(() => {
+                if (active) setResumeBlobUrl(null);
+            });
+        return () => {
+            active = false;
+        };
+    }, [open, resumeFile]);
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
@@ -23,6 +96,14 @@ export function ResumePreview({ open, onOpenChange }: { open: boolean; onOpenCha
                 {/* PDF Preview with watermark overlay */}
                 <div className="relative flex-1 overflow-hidden">
                     <div className="h-[70vh] relative">
+                        {isFrameLoading && (
+                            <div className="absolute inset-0 z-20 flex items-center justify-center bg-background/70 backdrop-blur-sm">
+                                <p className="text-sm text-muted-foreground">
+                                    {lang === "en" ? "Loading resume preview..." : "正在加载简历预览..."}
+                                </p>
+                            </div>
+                        )}
+
                         {/* Watermark overlay */}
                         <div className="absolute inset-0 pointer-events-none z-10">
                             <div className="absolute inset-0 grid grid-cols-3 grid-rows-5 gap-8 p-12">
@@ -37,10 +118,12 @@ export function ResumePreview({ open, onOpenChange }: { open: boolean; onOpenCha
                             </div>
                         </div>
 
-                        {/* PDF Embed using embed tag for faster loading */}
-                        <embed
-                            src={`${resumeFile}#toolbar=0&navpanes=0`}
-                            type="application/pdf"
+                        {/* iframe gives us onLoad so we can render a true loading state */}
+                        <iframe
+                            key={resumeSrc}
+                            src={resumeSrc}
+                            title={lang === "en" ? "Resume Preview PDF" : "简历预览 PDF"}
+                            onLoad={() => setIsFrameLoading(false)}
                             className="w-full h-full bg-white"
                         />
                     </div>
