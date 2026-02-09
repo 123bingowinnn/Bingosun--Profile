@@ -1,6 +1,6 @@
 "use client";
 
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion, useScroll, useSpring } from "framer-motion";
@@ -15,13 +15,23 @@ import { cn } from "@/lib/utils";
 export function Navbar() {
   const { lang } = useI18n();
   const pathname = usePathname();
-  const router = useRouter();
   const content = getContent();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState("");
 
   const isHome = pathname === "/";
+  const activeNavOnSubPage =
+    pathname.startsWith("/experience")
+      ? "experience"
+      : pathname.startsWith("/projects")
+        ? "projects"
+        : pathname.startsWith("/research")
+          ? "research"
+          : pathname.startsWith("/contact")
+            ? "contact"
+            : "";
+  const highlightedNavId = isHome ? activeSection : activeNavOnSubPage;
 
   // Scroll progress
   const { scrollYProgress } = useScroll();
@@ -35,46 +45,75 @@ export function Navbar() {
 
   // Scroll spy
   useEffect(() => {
-    const ids = content.nav.map((item) => item.id);
-    const observers: IntersectionObserver[] = [];
-
-    ids.forEach((id) => {
-      const el = document.getElementById(id);
-      if (!el) return;
-      const observer = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-              setActiveSection(id);
-            }
-          });
-        },
-        { rootMargin: "-20% 0px -70% 0px" }
-      );
-      observer.observe(el);
-      observers.push(observer);
-    });
-
-    return () => observers.forEach((o) => o.disconnect());
-  }, [content.nav]);
-
-  const handleNavClick = (href: string) => {
-    setMobileOpen(false);
-    if (href.startsWith("#")) {
-      if (isHome) {
-        const el = document.getElementById(href.slice(1));
-        if (el) {
-          el.scrollIntoView({ behavior: "smooth" });
-        } else {
-          window.location.hash = href.slice(1);
-        }
-      } else {
-        // Use native hash navigation on sub-pages to ensure anchor scroll works in static export deploys.
-        window.location.href = `/${href}`;
-      }
+    if (!isHome) {
+      setActiveSection("");
       return;
     }
-    router.push(href);
+
+    const ids = content.nav.map((item) => item.id);
+    const getSections = () =>
+      ids
+        .map((id) => document.getElementById(id))
+        .filter((el): el is HTMLElement => !!el);
+
+    const updateActiveSection = () => {
+      const sections = getSections();
+      if (!sections.length) return;
+
+      const scrollY = window.scrollY;
+      const viewportHeight = window.innerHeight;
+      const pageHeight = document.documentElement.scrollHeight;
+
+      // At page bottom, force-select the last visible section (usually "contact").
+      if (scrollY + viewportHeight >= pageHeight - 4) {
+        setActiveSection(sections[sections.length - 1].id);
+        return;
+      }
+
+      // Pick the latest section that has crossed a fixed probe line below the navbar.
+      const probeY = scrollY + 120;
+      let current = sections[0].id;
+      for (const section of sections) {
+        if (section.offsetTop <= probeY) {
+          current = section.id;
+        } else {
+          break;
+        }
+      }
+      setActiveSection(current);
+    };
+
+    updateActiveSection();
+    window.addEventListener("scroll", updateActiveSection, { passive: true });
+    window.addEventListener("resize", updateActiveSection);
+    return () => {
+      window.removeEventListener("scroll", updateActiveSection);
+      window.removeEventListener("resize", updateActiveSection);
+    };
+  }, [content.nav, isHome]);
+
+  const getNavHref = (href: string) => {
+    if (href.startsWith("#")) {
+      return isHome ? href : `/${href}`;
+    }
+    return href;
+  };
+
+  const handleNavClick = (event: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    setMobileOpen(false);
+    if (!isHome || !href.startsWith("#")) {
+      return;
+    }
+
+    event.preventDefault();
+    const targetId = href.slice(1);
+    const el = document.getElementById(targetId);
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth" });
+      history.replaceState(null, "", `#${targetId}`);
+    } else {
+      window.location.hash = targetId;
+    }
   };
 
   return (
@@ -115,25 +154,26 @@ export function Navbar() {
         {/* Desktop nav */}
         <div className="hidden md:flex items-center gap-1">
           {content.nav.map((item) => (
-            <button
+            <Link
               key={item.id}
-              onClick={() => handleNavClick(item.href)}
+              href={getNavHref(item.href)}
+              onClick={(event) => handleNavClick(event, item.href)}
               className={cn(
                 "relative px-3 py-2 text-sm rounded-md transition-colors",
-                activeSection === item.id
+                highlightedNavId === item.id
                   ? "text-foreground font-medium"
                   : "text-muted-foreground hover:text-foreground"
               )}
             >
               {item[lang]}
-              {activeSection === item.id && (
+              {highlightedNavId === item.id && (
                 <motion.div
                   className="absolute inset-0 bg-accent rounded-md -z-10"
                   layoutId="nav-active"
                   transition={{ type: "spring", stiffness: 400, damping: 30 }}
                 />
               )}
-            </button>
+            </Link>
           ))}
           <div className="ml-2 flex items-center gap-1 border-l border-border pl-2">
             <LanguageToggle />
@@ -167,21 +207,25 @@ export function Navbar() {
         >
           <div className="flex flex-col px-4 py-3 gap-1">
             {content.nav.map((item, i) => (
-              <motion.button
+              <motion.div
                 key={item.id}
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: i * 0.05 }}
-                onClick={() => handleNavClick(item.href)}
-                className={cn(
-                  "px-3 py-2.5 text-sm rounded-md text-left transition-colors",
-                  activeSection === item.id
-                    ? "text-foreground font-medium bg-accent"
-                    : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
-                )}
               >
-                {item[lang]}
-              </motion.button>
+                <Link
+                  href={getNavHref(item.href)}
+                  onClick={(event) => handleNavClick(event, item.href)}
+                  className={cn(
+                    "block px-3 py-2.5 text-sm rounded-md text-left transition-colors",
+                    highlightedNavId === item.id
+                      ? "text-foreground font-medium bg-accent"
+                      : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
+                  )}
+                >
+                  {item[lang]}
+                </Link>
+              </motion.div>
             ))}
           </div>
         </motion.div>
